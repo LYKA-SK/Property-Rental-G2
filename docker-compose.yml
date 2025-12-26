@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    container_name: property-rental-api
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://ep-dawn-hall-a1ti7go7-pooler.ap-southeast-1.aws.neon.tech:5432/neondb?sslmode=require&channelBinding=require"
+      SPRING_DATASOURCE_USERNAME: neondb_owner
+      SPRING_DATASOURCE_PASSWORD: npg_21hBWcMoNAjP
+    restart: always
