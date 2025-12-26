@@ -1,11 +1,13 @@
 package com.mindvault.Property.config;
 
 import com.mindvault.Property.entities.User;
-import com.mindvault.Property.repository.UserRepository;
+import com.mindvault.Property.repositories.UserRepository;
+
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import java.time.LocalDateTime;
+
 
 @Configuration
 public class DataSeeder {

@@ -13,7 +13,8 @@ import org.springframework.stereotype.Service;
 public class AuthService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    // Use the bean from SecurityConfig instead of 'new'
+    private final BCryptPasswordEncoder passwordEncoder; 
 
     public RegisterResponse register(RegisterRequest request) {
 
@@ -26,6 +27,8 @@ public class AuthService {
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .phone(request.getPhone())
+                // Add this line to satisfy the database constraint
+                .role("ROLE_USER") 
                 .build();
 
         userRepository.save(user);
