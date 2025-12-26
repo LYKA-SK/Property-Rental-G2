@@ -1,4 +1,4 @@
-package com.mindvault.Property.dtos_response;
+package com.mindvault.Property.dtos_respone;
 
 import lombok.*;
 
