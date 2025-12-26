@@ -3,6 +3,9 @@ spring:
     name: Property-Rental-API
 
   datasource:
+    url: jdbc:postgresql://ep-dawn-hall-a1ti7go7-pooler.ap-southeast-1.aws.neon.tech:5432/neondb?sslmode=require&channelBinding=require
+    username: neondb_owner
+    password: npg_21hBWcMoNAjP
     driver-class-name: org.postgresql.Driver
 
   jpa:
