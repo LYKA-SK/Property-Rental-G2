@@ -1,4 +1,4 @@
-package com.mindvault.Property.dtos_request;
+package com.mindvault.Property.dtos_response;
 
 import lombok.*;
 
@@ -7,10 +7,10 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RegisterRequest {
+public class RegisterResponse {
 
     private String fullName;
+    private String message;
     private String email;
-    private String password;
-    private String phone;
+     private String phone;
 }
