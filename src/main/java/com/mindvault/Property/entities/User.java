@@ -1,9 +1,9 @@
 package com.mindvault.Property.entities;
 
 import java.time.LocalDateTime;
-
+import java.util.HashSet;
+import java.util.Set;
 import org.hibernate.annotations.CreationTimestamp;
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -20,7 +20,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "full_name", nullable = false)
     private String fullName;
 
     @Column(nullable = false, unique = true)
@@ -29,12 +29,29 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(unique = true)
     private String phone;
 
-    @Column(nullable = false)
-    private String role; 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "USER_ROLE", 
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    @Builder.Default 
+    private Set<Role> roles = new HashSet<>();
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    // Correct way to add a role:
+    public void addRole(Role role) {
+        if (this.roles == null) {
+            this.roles = new HashSet<>();
+        }
+        this.roles.add(role);
+    }
+    
+    // REMOVED: setRole(String string) as it is incompatible with Many-to-Many
 }
