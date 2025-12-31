@@ -1,10 +1,15 @@
 package com.mindvault.Property.entities;
 
 import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "reviews")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Review {
 
     @Id
@@ -22,54 +27,6 @@ public class Review {
     @Column(name = "rental_post_id", nullable = false)
     private Long rentalPostId;
 
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
-
-    // getters and setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Integer getRating() {
-        return rating;
-    }
-
-    public void setRating(Integer rating) {
-        this.rating = rating;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Long getRentalPostId() {
-        return rentalPostId;
-    }
-
-    public void setRentalPostId(Long rentalPostId) {
-        this.rentalPostId = rentalPostId;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 }
