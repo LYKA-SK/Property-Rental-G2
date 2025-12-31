@@ -1,7 +1,6 @@
-# Use Java 17 and Maven
-FROM maven:3.9.2-eclipse-temurin-17 AS build
+# 1. Update this to Java 21 so Maven can compile for Java 21
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 
-# Set working directory
 WORKDIR /app
 
 # Copy project files
@@ -11,8 +10,9 @@ COPY src ./src
 # Build JAR
 RUN mvn clean package -DskipTests
 
-# Use slim Java image to run
-FROM eclipse-temurin:21-jdk-alpine
+# 2. Use the JRE (Runtime) for the final image to keep it small
+# Note: Changed from jdk-alpine to jre for a smaller, more secure image
+FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
