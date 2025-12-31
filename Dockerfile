@@ -1,23 +1,21 @@
-# 1. Update this to Java 21 so Maven can compile for Java 21
+# Stage 1: Build
 FROM maven:3.9.6-eclipse-temurin-21 AS build
-
 WORKDIR /app
 
-# Copy project files
+# Optimization: Copy pom first to cache dependencies
 COPY pom.xml .
-COPY src ./src
+RUN mvn dependency:go-offline -B
 
-# Build JAR
+# Copy source and build
+COPY src ./src
 RUN mvn clean package -DskipTests
 
-# 2. Use the JRE (Runtime) for the final image to keep it small
-# Note: Changed from jdk-alpine to jre for a smaller, more secure image
+# Stage 2: Run
 FROM eclipse-temurin:21-jre-alpine
-
 WORKDIR /app
 
-# Copy JAR from build stage
-COPY --from=build /app/target/property-rental-api.jar app.jar
+# Using wildcard to handle naming variations automatically
+COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
 
