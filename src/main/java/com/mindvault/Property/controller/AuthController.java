@@ -9,7 +9,7 @@ import com.mindvault.Property.entities.User;
 import com.mindvault.Property.services.AuthService;
 import com.mindvault.Property.dtos_request.LoginRequest;
 import com.mindvault.Property.dtos_request.RegisterRequest;
-import com.mindvault.Property.dtos_respone.AuthResponse; // THIS IMPORT WAS MISSING
+import com.mindvault.Property.dtos_respone.AuthResponse;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -20,13 +20,13 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody RegisterRequest request) {
-        User newUser = authService.register(request);
+        User newUser = authService.register(request); // exceptions are handled globally
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
-        AuthResponse response = authService.login(request);
-        return ResponseEntity.status(response.getStatus()).body(response);
+        AuthResponse response = authService.login(request); // exceptions are handled globally
+        return ResponseEntity.ok(response);
     }
 }

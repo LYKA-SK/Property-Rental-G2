@@ -3,7 +3,7 @@ package com.mindvault.Property.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException; // CORRECT IMPORT
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,14 +30,17 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private JwtService jwtService;
+
     @Override
-    public User register(RegisterRequest request) { // Change return type to User
+    public User register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Error: Email is already in use!");
+            throw new RuntimeException("Email is already in use!");
         }
 
         Role userRole = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(() -> new RuntimeException("Error: ROLE_USER not found."));
+                .orElseThrow(() -> new RuntimeException("ROLE_USER not found."));
 
         User user = User.builder()
                 .fullName(request.getFullName())
@@ -47,16 +50,12 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         user.addRole(userRole);
-        return userRepository.save(user); // Return the saved user with their ID
+        return userRepository.save(user); // exception on DB failure is handled globally
     }
-
-    @Autowired
-    private JwtService jwtService;
 
     @Override
     public AuthResponse login(LoginRequest request) {
         try {
-            // This now calls the DAOProvider defined in SecurityConfig
             authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
@@ -74,11 +73,9 @@ public class AuthServiceImpl implements AuthService {
                     .refreshToken(refreshToken)
                     .user(user)
                     .build();
+
         } catch (AuthenticationException e) {
-            return AuthResponse.builder()
-                    .status(401)
-                    .message("Invalid email or password")
-                    .build();
+            throw new AuthenticationException("Invalid email or password") {};
         }
     }
 }
