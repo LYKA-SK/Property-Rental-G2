@@ -33,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private JwtService jwtService;
 
-    // Step 1: Register user with ROLE_USER
+    //Register user with ROLE_USER
     @Override
     public User register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -54,7 +54,7 @@ public class AuthServiceImpl implements AuthService {
         return userRepository.save(user);
     }
 
-    // Step 2 & 4: Login user and generate JWT
+    //Login user and generate JWT
     @Override
     public AuthResponse login(LoginRequest request) {
         try {
@@ -81,7 +81,7 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    // Step 3: Assign ROLE_AGENT to a user
+    // Assign ROLE_AGENT to a user
     @Override
     public User assignAgentRole(Long userId) {
         User user = userRepository.findById(userId)
