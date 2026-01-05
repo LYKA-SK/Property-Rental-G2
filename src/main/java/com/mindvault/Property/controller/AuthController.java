@@ -18,15 +18,24 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+    // Step 1: Register
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody RegisterRequest request) {
-        User newUser = authService.register(request); // exceptions are handled globally
+        User newUser = authService.register(request);
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
+    // Step 2: Login
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
-        AuthResponse response = authService.login(request); // exceptions are handled globally
+        AuthResponse response = authService.login(request);
         return ResponseEntity.ok(response);
+    }
+
+    // Step 3: Assign ROLE_AGENT
+    @PostMapping("/assign-agent/{userId}")
+    public ResponseEntity<User> assignAgentRole(@PathVariable Long userId) {
+        User updatedUser = authService.assignAgentRole(userId);
+        return ResponseEntity.ok(updatedUser);
     }
 }

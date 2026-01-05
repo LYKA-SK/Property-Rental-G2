@@ -33,14 +33,15 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private JwtService jwtService;
 
+    // Step 1: Register user with ROLE_USER
     @Override
     public User register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("Email is already in use!");
         }
 
-        Role userRole = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(() -> new RuntimeException("ROLE_USER not found."));
+        Role userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
 
         User user = User.builder()
                 .fullName(request.getFullName())
@@ -49,10 +50,11 @@ public class AuthServiceImpl implements AuthService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
 
-        user.addRole(userRole);
-        return userRepository.save(user); // exception on DB failure is handled globally
+        user.addRole(userRole);  // Assign ROLE_USER
+        return userRepository.save(user);
     }
 
+    // Step 2 & 4: Login user and generate JWT
     @Override
     public AuthResponse login(LoginRequest request) {
         try {
@@ -63,9 +65,9 @@ public class AuthServiceImpl implements AuthService {
             User user = userRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
+            // Generate JWT token including all roles
             String accessToken = jwtService.generateToken(user);
             String refreshToken = jwtService.generateRefreshToken(user);
-
             return AuthResponse.builder()
                     .status(200)
                     .message("Login Successful")
@@ -77,5 +79,22 @@ public class AuthServiceImpl implements AuthService {
         } catch (AuthenticationException e) {
             throw new AuthenticationException("Invalid email or password") {};
         }
+    }
+
+    // Step 3: Assign ROLE_AGENT to a user
+    @Override
+    public User assignAgentRole(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Role agentRole = roleRepository.findByName("AGENT")
+                .orElseThrow(() -> new RuntimeException("AGENT not found"));
+
+        if (!user.getRoles().contains(agentRole)) {
+            user.addRole(agentRole);
+            user = userRepository.save(user);
+        }
+
+        return user;
     }
 }
