@@ -8,7 +8,6 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import com.mindvault.Property.entities.Role;
 import com.mindvault.Property.entities.User;
 
 import java.security.Key;

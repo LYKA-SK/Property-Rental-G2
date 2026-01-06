@@ -17,10 +17,6 @@ public class AuthController {
 
     @Autowired
     private AuthService authService;
-<<<<<<< HEAD
-=======
-
->>>>>>> 3c865f8ca8d5e362836b1dcd11b647d44424cf16
   //Register
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody RegisterRequest request) {
