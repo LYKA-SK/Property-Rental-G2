@@ -27,4 +27,12 @@ public class RentalPostService {
     }
 
     public void delete(Long id) { repository.deleteById(id); }
+    public List<RentalPost> search(String keyword) {
+    return repository.findByTitleContainingIgnoreCaseOrAddressContainingIgnoreCase(keyword, keyword);
+}
+    public Object filterByPrice(Double min, Double max) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'filterByPrice'");
+    }
+
 }

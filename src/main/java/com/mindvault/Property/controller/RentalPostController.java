@@ -18,7 +18,7 @@ public class RentalPostController {
         return ResponseEntity.ok(service.create(post));
     }
 
-    @GetMapping("/all") // Publicly visible usually, but depends on your SecurityConfig
+    @GetMapping("/all") // Publicly visible
     public ResponseEntity<List<RentalPost>> getAll() {
         return ResponseEntity.ok(service.getAll());
     }
@@ -32,5 +32,17 @@ public class RentalPostController {
     public ResponseEntity<String> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.ok("Deleted Successfully");
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<RentalPost>> search(@RequestParam("q") String keyword) {
+        return ResponseEntity.ok(service.search(keyword));
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<Object> filterByPrice(
+            @RequestParam Double min,
+            @RequestParam Double max) {
+        return ResponseEntity.ok(service.filterByPrice(min, max));
     }
 }
