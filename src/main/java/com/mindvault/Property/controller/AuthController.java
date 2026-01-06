@@ -9,7 +9,7 @@ import com.mindvault.Property.entities.User;
 import com.mindvault.Property.services.AuthService;
 import com.mindvault.Property.dtos_request.LoginRequest;
 import com.mindvault.Property.dtos_request.RegisterRequest;
-import com.mindvault.Property.dtos_respone.AuthResponse; // THIS IMPORT WAS MISSING
+import com.mindvault.Property.dtos_respone.AuthResponse; 
 
 @RestController
 @RequestMapping("/api/auth")

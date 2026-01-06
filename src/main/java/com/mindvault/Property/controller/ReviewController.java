@@ -1,10 +1,11 @@
 package com.mindvault.Property.controller;
 
-import org.springframework.web.bind.annotation.*;
-import lombok.RequiredArgsConstructor;
 import com.mindvault.Property.entities.Review;
-import com.mindvault.Property.dtos_request.ReviewRequest;
 import com.mindvault.Property.services.ReviewService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
@@ -14,39 +15,20 @@ public class ReviewController {
 
     private final ReviewService reviewService;
 
-    // Create a review
+    // FIX: Changed @RequestParam to @RequestBody
     @PostMapping
-    public Review create(@RequestBody ReviewRequest request) {
-        return reviewService.createReview(request);
+    @ResponseStatus(HttpStatus.CREATED)
+    public Review createReview(@RequestBody Review review) {
+        // This calls your service using the data from the JSON body
+        return reviewService.createReview(
+            review.getUsername(), 
+            review.getRating(), 
+            review.getComment()
+        );
     }
 
-    // Get all reviews
     @GetMapping
-    public List<Review> getAll() {
+    public List<Review> getAllReviews() {
         return reviewService.getAllReviews();
-    }
-
-    // Get reviews by rental post
-    @GetMapping("/by-post/{postId}")
-    public List<Review> getByPost(@PathVariable Long postId) {
-        return reviewService.getReviewsByPost(postId);
-    }
-
-    // Get reviews by user
-    @GetMapping("/by-user/{userId}")
-    public List<Review> getByUser(@PathVariable Long userId) {
-        return reviewService.getReviewsByUser(userId);
-    }
-
-    // Search reviews by keyword
-    @GetMapping("/search")
-    public List<Review> searchByKeyword(@RequestParam String keyword) {
-        return reviewService.searchReviewsByKeyword(keyword);
-    }
-
-    // Get reviews by rating
-    @GetMapping("/by-rating/{rating}")
-    public List<Review> getByRating(@PathVariable Integer rating) {
-        return reviewService.getReviewsByRating(rating);
     }
 }

@@ -2,7 +2,7 @@ package com.mindvault.Property.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Entity
 @Table(name = "reviews")
@@ -16,17 +16,18 @@ public class Review {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer rating;
+    private Integer rating; // 1-5 stars
 
     @Column(columnDefinition = "TEXT")
     private String comment;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    private String username; // simple user info
 
-    @Column(name = "rental_post_id", nullable = false)
-    private Long rentalPostId;
+    private Timestamp createdAt;
 
-    @Builder.Default
-    private LocalDateTime createdAt = LocalDateTime.now();
+    // Automatically set createdAt before saving
+    @PrePersist
+    public void prePersist() {
+        createdAt = new Timestamp(System.currentTimeMillis());
+    }
 }
