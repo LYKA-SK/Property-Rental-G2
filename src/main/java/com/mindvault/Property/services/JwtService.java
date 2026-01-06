@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import com.mindvault.Property.entities.Role;
@@ -20,47 +21,35 @@ import java.util.stream.Collectors;
 @Service
 public class JwtService {
 
-    // Make sure this key is long enough for HS256
-    private static final String SECRET_KEY = "YourVerySecretKeyForJwtSigningMustBeVeryLongAndStrong1234567890";
+    // Ensure this is a Base64 encoded string if using Decoders.BASE64.decode
+    private static final String SECRET_KEY = "YourVerySecretKeyForJwtSigningMustBeVeryLongAndStrong1234567890YourVerySecretKeyForJwtSigningMustBeVeryLongAndStrong1234567890";
 
-    // -------------------------------
-    // Extract username (email) from JWT
-    // -------------------------------
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    // -------------------------------
-    // Check if token is valid for a user
-    // -------------------------------
-    public boolean isTokenValid(String token, User user) {
+    // UPDATED: Accepts UserDetails to prevent ClassCastException in Filter
+    public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(user.getEmail())) && !isTokenExpired(token);
+        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
 
-    // -------------------------------
-    // Extract any claim from JWT
-    // -------------------------------
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    // -------------------------------
-    // Generate JWT access token with roles
-    // -------------------------------
+    // Used during Login/Registration
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
-        // Include roles in the token
+        // Important: Prepend ROLE_ here too if you want roles inside the JWT payload
         claims.put("roles", user.getRoles().stream()
-                .map(Role::getName)
+                .map(role -> "ROLE_" + role.getName().toUpperCase())
                 .collect(Collectors.toList()));
+        
         return generateToken(claims, user.getEmail());
     }
 
-    // -------------------------------
-    // Internal helper to generate JWT with claims
-    // -------------------------------
     private String generateToken(Map<String, Object> extraClaims, String username) {
         return Jwts.builder()
                 .setClaims(extraClaims)
@@ -71,9 +60,6 @@ public class JwtService {
                 .compact();
     }
 
-    // -------------------------------
-    // Generate refresh token (7 days)
-    // -------------------------------
     public String generateRefreshToken(User user) {
         return Jwts.builder()
                 .setSubject(user.getEmail())
@@ -83,9 +69,6 @@ public class JwtService {
                 .compact();
     }
 
-    // -------------------------------
-    // Check if JWT is expired
-    // -------------------------------
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
@@ -94,9 +77,6 @@ public class JwtService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    // -------------------------------
-    // Extract all claims from JWT
-    // -------------------------------
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSignInKey())
@@ -105,10 +85,9 @@ public class JwtService {
                 .getBody();
     }
 
-    // -------------------------------
-    // Convert SECRET_KEY to signing key
-    // -------------------------------
     private Key getSignInKey() {
+        // If your key is plain text, use Keys.hmacShaKeyFor(SECRET_KEY.getBytes())
+        // If your key is Base64, keep this:
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
