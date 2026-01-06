@@ -1,33 +1,31 @@
 package com.mindvault.Property.entities;
-
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;    
+
+
 import lombok.*;
-import java.sql.Timestamp;
+import org.hibernate.annotations.CreationTimestamp;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "reviews")
-@Data
+@Table(name = "review")
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer rating; // 1-5 stars
+    @Min(1)
+    @Max(5)
+    private Integer rating;
 
     @Column(columnDefinition = "TEXT")
     private String comment;
 
-    private String username; // simple user info
-
-    private Timestamp createdAt;
-
-    // Automatically set createdAt before saving
-    @PrePersist
-    public void prePersist() {
-        createdAt = new Timestamp(System.currentTimeMillis());
-    }
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 }
