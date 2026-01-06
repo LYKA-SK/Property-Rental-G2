@@ -20,7 +20,7 @@ public class RoleSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         // Define the roles based on your ERD requirements
-        List<String> roleNames = List.of("ROLE_USER", "ROLE_AGENT", "ROLE_ADMIN");
+        List<String> roleNames = List.of("USER", "AGENT", "ADMIN");
 
         for (String roleName : roleNames) {
             // Check if the role already exists to avoid duplicates
