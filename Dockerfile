@@ -1,14 +1,22 @@
-# Use Java 17 (recommended for Spring Boot)
-FROM eclipse-temurin:17-jdk-alpine
-
-# Set working directory
+# Stage 1: Build
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Copy jar file
-COPY target/property-rental-api.jar app.jar
+# Optimization: Copy pom first to cache dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-# Expose Spring Boot port
+# Copy source and build
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# Stage 2: Run
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+
+# Using wildcard to handle naming variations automatically
+COPY --from=build /app/target/*.jar app.jar
+
 EXPOSE 8080
 
-# Run application
 ENTRYPOINT ["java", "-jar", "app.jar"]
