@@ -42,7 +42,7 @@ public class DataSeeder {
 
                 admin.addRole(adminRole);
                 userRepository.save(admin);
-                System.out.println("✅ Admin seeded!");
+                System.out.println(" Admin seeded!");
             }
         };
     }

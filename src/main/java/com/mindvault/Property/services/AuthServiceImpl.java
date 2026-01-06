@@ -3,7 +3,7 @@ package com.mindvault.Property.services;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException; // CORRECT IMPORT
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,14 +30,18 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private JwtService jwtService;
+
+    //Register user with ROLE_USER
     @Override
-    public User register(RegisterRequest request) { // Change return type to User
+    public User register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Error: Email is already in use!");
+            throw new RuntimeException("Email is already in use!");
         }
 
-        Role userRole = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(() -> new RuntimeException("Error: ROLE_USER not found."));
+        Role userRole = roleRepository.findByName("USER")
+                .orElseThrow(() -> new RuntimeException("ROLE_USER not found"));
 
         User user = User.builder()
                 .fullName(request.getFullName())
@@ -46,17 +50,14 @@ public class AuthServiceImpl implements AuthService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
 
-        user.addRole(userRole);
-        return userRepository.save(user); // Return the saved user with their ID
+        user.addRole(userRole);  // Assign ROLE_USER
+        return userRepository.save(user);
     }
 
-    @Autowired
-    private JwtService jwtService;
-
+    //Login user and generate JWT
     @Override
     public AuthResponse login(LoginRequest request) {
         try {
-            // This now calls the DAOProvider defined in SecurityConfig
             authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
@@ -64,9 +65,9 @@ public class AuthServiceImpl implements AuthService {
             User user = userRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
+            // Generate JWT token including all roles
             String accessToken = jwtService.generateToken(user);
             String refreshToken = jwtService.generateRefreshToken(user);
-
             return AuthResponse.builder()
                     .status(200)
                     .message("Login Successful")
@@ -74,11 +75,26 @@ public class AuthServiceImpl implements AuthService {
                     .refreshToken(refreshToken)
                     .user(user)
                     .build();
+
         } catch (AuthenticationException e) {
-            return AuthResponse.builder()
-                    .status(401)
-                    .message("Invalid email or password")
-                    .build();
+            throw new AuthenticationException("Invalid email or password") {};
         }
+    }
+
+    // Assign ROLE_AGENT to a user
+    @Override
+    public User assignAgentRole(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        Role agentRole = roleRepository.findByName("AGENT")
+                .orElseThrow(() -> new RuntimeException("AGENT not found"));
+
+        if (!user.getRoles().contains(agentRole)) {
+            user.addRole(agentRole);
+            user = userRepository.save(user);
+        }
+
+        return user;
     }
 }
