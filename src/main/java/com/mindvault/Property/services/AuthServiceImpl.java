@@ -30,10 +30,33 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+//    @Override
+//    public User register(RegisterRequest request) { // Change return type to User
+//        if (userRepository.existsByEmail(request.getEmail())) {
+//            throw new RuntimeException("Error: Email is already in use!");
+//        }
+//
+//        Role userRole = roleRepository.findByName("ROLE_USER")
+//                .orElseThrow(() -> new RuntimeException("Error: ROLE_USER not found."));
+//
+//        User user = User.builder()
+//                .fullName(request.getFullName())
+//                .email(request.getEmail())
+//                .phone(request.getPhone())
+//                .password(passwordEncoder.encode(request.getPassword()))
+//                .build();
+//
+//        user.addRole(userRole);
+//        return userRepository.save(user); // Return the saved user with their ID
+//    }
+    
     @Override
-    public User register(RegisterRequest request) { // Change return type to User
+    public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Error: Email is already in use!");
+            return AuthResponse.builder()
+                    .status(400)
+                    .message("Error: Email is already in use!")
+                    .build();
         }
 
         Role userRole = roleRepository.findByName("ROLE_USER")
@@ -47,7 +70,14 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         user.addRole(userRole);
-        return userRepository.save(user); // Return the saved user with their ID
+        userRepository.save(user);
+
+        // Return a success message
+        return AuthResponse.builder()
+                .status(200)
+                .message("User registered successfully!")
+                .user(user) // Optional: include user data if needed
+                .build();
     }
 
     @Autowired

@@ -19,9 +19,12 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody RegisterRequest request) {
-        User newUser = authService.register(request);
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+        AuthResponse response = authService.register(request);
+        if (response.getStatus() == 200) {
+            return ResponseEntity.ok(response);
+        }
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @PostMapping("/login")
