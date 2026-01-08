@@ -4,6 +4,7 @@ import com.mindvault.Property.repositories.UserRepository;
 import com.mindvault.Property.services.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -32,7 +33,6 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        // Just return your custom User entity directly
         return username -> userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
@@ -62,10 +62,20 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                
+                // --- ROLE-BASED ACCESS CONTROL ---
+                // 1. Only Agents can perform Write/Update/Delete operations
+                .requestMatchers(HttpMethod.POST, "/api/posts/**").hasAuthority("ROLE_AGENT")
+                .requestMatchers(HttpMethod.PUT, "/api/posts/**").hasAuthority("ROLE_AGENT")
+                .requestMatchers(HttpMethod.DELETE, "/api/posts/**").hasAuthority("ROLE_AGENT")
+                
+                // 2. Both Users and Agents can view posts
+                .requestMatchers(HttpMethod.GET, "/api/posts/**").hasAnyAuthority("ROLE_USER", "ROLE_AGENT")
+                
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())
-            // Pass the bean created below
+            // Pass the beans into the filter correctly
             .addFilterBefore(new JwtAuthenticationFilter(userDetailsService(), jwtService), 
                              UsernamePasswordAuthenticationFilter.class);
 

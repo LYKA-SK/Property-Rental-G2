@@ -1,4 +1,4 @@
-package com.mindvault.Property.repository;
+package com.mindvault.Property.repositories;
 import com.mindvault.Property.entities.RentalPost;
 import org.springframework.data.jpa.repository.JpaRepository;
 

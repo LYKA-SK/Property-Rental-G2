@@ -21,9 +21,12 @@ public class RentalPost {
     private String waterCost;
 
     @ManyToOne
-    @JoinColumn(name = "user_id") // This is the 'agent' or owner
+    @JoinColumn(name = "user_id")
     private User user;
 
+    @Builder.Default // Corrected
     private LocalDateTime createdAt = LocalDateTime.now();
+    
+    @Builder.Default // Corrected
     private LocalDateTime updatedAt = LocalDateTime.now();
 }
