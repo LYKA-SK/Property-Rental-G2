@@ -72,6 +72,7 @@ public class SecurityConfig {
                 // 2. Both Users and Agents can view posts
                 .requestMatchers(HttpMethod.GET, "/api/posts/**").hasAnyAuthority("ROLE_USER", "ROLE_AGENT")
                 
+                .requestMatchers("/api/auth/**").permitAll() // Allow registration/login
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())
