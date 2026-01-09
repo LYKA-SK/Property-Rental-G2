@@ -61,7 +61,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll() // Allow registration/login
+                .requestMatchers("/api/reviews/**").permitAll() // Allow all review endpoints for testing
                 .anyRequest().authenticated()
             )
             .authenticationProvider(authenticationProvider())

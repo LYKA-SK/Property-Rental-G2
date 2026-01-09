@@ -1,75 +1,77 @@
+// package com.mindvault.Property.entities;
+
+// import jakarta.persistence.*;
+// import lombok.*;
+// import java.time.LocalDateTime;
+
+// @Entity
+// @Data
+// @Builder
+// @NoArgsConstructor
+// @AllArgsConstructor
+// @Table(
+//     name = "review",
+//     uniqueConstraints = {
+//         @UniqueConstraint(columnNames = {"user_id", "rental_post_id"})
+//     }
+// )
+// public class Review {
+
+//     @Id
+//     @GeneratedValue(strategy = GenerationType.IDENTITY)
+//     private Long id;
+
+//     @Column(nullable = false)
+//     private int rating; // 1-5 only
+
+//     @Column(columnDefinition = "TEXT")
+//     private String comment;
+
+//     @ManyToOne(fetch = FetchType.LAZY)
+//     @JoinColumn(name = "user_id", nullable = false)
+//     private User user;
+
+//     @ManyToOne(fetch = FetchType.LAZY)
+//     @JoinColumn(name = "rental_post_id", nullable = false)
+//     private RentalPost rentalPost;
+
+//     private LocalDateTime createdAt;
+
+//     @PrePersist
+//     protected void onCreate() {
+//         this.createdAt = LocalDateTime.now();
+//     }
+// }
+
 package com.mindvault.Property.entities;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+import lombok.*;
 
 @Entity
-@Table(name = "reviews")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Table(name = "reviews", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "rental_post_id"})
+})
 public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Integer rating;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(columnDefinition = "TEXT")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rental_post_id", nullable = false)
+    private RentalPost rentalPost;
+
+    @Column(nullable = false)
+    private int rating; // 1 to 5
+
     private String comment;
-
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
-
-    @Column(name = "rental_post_id", nullable = false)
-    private Long rentalPostId;
-
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    // getters and setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Integer getRating() {
-        return rating;
-    }
-
-    public void setRating(Integer rating) {
-        this.rating = rating;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
-    public Long getRentalPostId() {
-        return rentalPostId;
-    }
-
-    public void setRentalPostId(Long rentalPostId) {
-        this.rentalPostId = rentalPostId;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
 }
