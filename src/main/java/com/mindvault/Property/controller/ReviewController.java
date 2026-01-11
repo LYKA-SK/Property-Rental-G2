@@ -23,7 +23,7 @@ public class ReviewController {
     private final ReviewService reviewService;
     private final RentalPostRepository rentalPostRepository;
 
-    // --- Submit a Review ---
+    // --- Submit a Review 
     @PostMapping
     public ResponseEntity<?> addReview(
             @AuthenticationPrincipal UserDetails userDetails,

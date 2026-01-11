@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/posts") // This is the base path
+@RequestMapping("/api/posts") 
 @RequiredArgsConstructor
 public class RentalPostController {
 
@@ -27,7 +27,7 @@ public class RentalPostController {
         return ResponseEntity.ok(service.create(post, user));
     }
 
-    @PutMapping("/update/{id}") // This will result in /api/posts/update/{id}
+    @PutMapping("/update/{id}") 
     public ResponseEntity<RentalPost> update(@PathVariable Long id, @RequestBody RentalPost post, @AuthenticationPrincipal User user) {
         return ResponseEntity.ok(service.update(id, post, user));
     }
