@@ -53,11 +53,13 @@ public class RentalPostService {
         return repository.save(post);
     }
 
-    public void delete(Long id, User currentUser) {
-        RentalPost post = getById(id);
-        if (!post.getUser().getId().equals(currentUser.getId())) {
-            throw new AccessDeniedException("Unauthorized: You cannot delete this post.");
-        }
-        repository.delete(post); 
+    public void delete(Long id, User user) { repository.deleteById(id); }
+    public List<RentalPost> search(String keyword) {
+    return repository.findByTitleContainingIgnoreCaseOrAddressContainingIgnoreCase(keyword, keyword);
+}
+    public Object filterByPrice(Double min, Double max) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'filterByPrice'");
     }
+
 }

@@ -37,4 +37,16 @@ public class RentalPostController {
         service.delete(id, user);
         return ResponseEntity.ok("Post deleted successfully");
     }
+    @GetMapping("/search")
+    public ResponseEntity<List<RentalPost>> search(@RequestParam("q") String keyword) {
+        return ResponseEntity.ok(service.search(keyword));
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<Object> filterByPrice(
+            @RequestParam Double min,
+            @RequestParam Double max) {
+        return ResponseEntity.ok(service.filterByPrice(min, max));
+    }
+
 }
