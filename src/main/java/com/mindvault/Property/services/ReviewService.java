@@ -33,7 +33,6 @@ public class ReviewService {
         RentalPost post = rentalPostRepository.findById(rentalPostId)
                 .orElseThrow(() -> new RuntimeException("Rental post not found"));
 
-        // Check if user already reviewed
         reviewRepository.findByUserAndRentalPost(user, post).ifPresent(r -> {
             throw new RuntimeException("You have already reviewed this property");
         });

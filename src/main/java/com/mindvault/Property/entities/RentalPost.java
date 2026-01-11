@@ -21,7 +21,7 @@ public class RentalPost {
     private String waterCost;
 
     @ManyToOne
-    @JoinColumn(name = "user_id") // This is the 'agent' or owner
+    @JoinColumn(name = "user_id") 
     private User user;
 
     private LocalDateTime createdAt = LocalDateTime.now();
