@@ -1,12 +1,5 @@
 package com.mindvault.Property.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.mindvault.Property.dtos_request.LoginRequest;
 import com.mindvault.Property.dtos_request.RegisterRequest;
 import com.mindvault.Property.dtos_respone.AuthResponse;
@@ -14,26 +7,23 @@ import com.mindvault.Property.entities.Role;
 import com.mindvault.Property.entities.User;
 import com.mindvault.Property.repositories.RoleRepository;
 import com.mindvault.Property.repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private JwtService jwtService;
-
-    //Register user with ROLE_USER
     @Override
     public User register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -54,20 +44,19 @@ public class AuthServiceImpl implements AuthService {
         return userRepository.save(user);
     }
 
-    //Login user and generate JWT
     @Override
     public AuthResponse login(LoginRequest request) {
         try {
             authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
             );
 
             User user = userRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            // Generate JWT token including all roles
             String accessToken = jwtService.generateToken(user);
             String refreshToken = jwtService.generateRefreshToken(user);
+
             return AuthResponse.builder()
                     .status(200)
                     .message("Login Successful")
@@ -75,13 +64,11 @@ public class AuthServiceImpl implements AuthService {
                     .refreshToken(refreshToken)
                     .user(user)
                     .build();
-
         } catch (AuthenticationException e) {
-            throw new AuthenticationException("Invalid email or password") {};
+            throw new RuntimeException("Invalid email or password");
         }
     }
 
-    // Assign ROLE_AGENT to a user
     @Override
     public User assignAgentRole(Long userId) {
         User user = userRepository.findById(userId)

@@ -1,12 +1,14 @@
 package com.mindvault.Property.dtos_request;
 
-import lombok.Data;
+import lombok.*;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class RegisterRequest {
     private String fullName;
     private String email;
-    private String password;
     private String phone;
-    // Getters and Setters
+    private String password;
 }

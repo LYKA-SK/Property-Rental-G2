@@ -4,16 +4,16 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Data
+@Table(name = "roles")
+@Data  // generates getters, setters, toString, equals, hashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "role")
 public class Role {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name; // ROLE_USER or ROLE_AGENT
+    @Column(unique = true, nullable = false)
+    private String name;
 }

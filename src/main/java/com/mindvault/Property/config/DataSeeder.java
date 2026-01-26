@@ -1,49 +1,35 @@
 package com.mindvault.Property.config;
 
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import com.mindvault.Property.entities.Role;
-import com.mindvault.Property.entities.User; // IMPORTANT IMPORT
+import com.mindvault.Property.entities.User;
 import com.mindvault.Property.repositories.RoleRepository;
 import com.mindvault.Property.repositories.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
-@Configuration
-public class DataSeeder {
+import java.util.Set;
 
-    @Bean
-    CommandLineRunner initDatabase(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
-        return args -> {
-            // Seed Roles first if they don't exist
-            if (roleRepository.findByName("ROLE_ADMIN").isEmpty()) {
-                Role adminRole = new Role();
-                adminRole.setName("ROLE_ADMIN");
-                roleRepository.save(adminRole);
-            }
-            
-            if (roleRepository.findByName("ROLE_USER").isEmpty()) {
-                Role userRole = new Role();
-                userRole.setName("ROLE_USER");
-                roleRepository.save(userRole);
-            }
+@Component
+@RequiredArgsConstructor
+public class DataSeeder implements CommandLineRunner {
 
-            String adminEmail = "admin@property.com";
-            if (userRepository.findByEmail(adminEmail).isEmpty()) {
-                Role adminRole = roleRepository.findByName("ROLE_ADMIN").get();
+    private final RoleRepository roleRepository;
+    private final UserRepository userRepository;
 
-                User admin = User.builder()
-                        .fullName("System Admin")
-                        .email(adminEmail)
-                        .phone("012345678")
-                        .password(passwordEncoder.encode("admin123"))
-                        .build();
+    @Override
+    public void run(String... args) throws Exception {
+        Role adminRole = Role.builder().name("ADMIN").build();
+        Role userRole = Role.builder().name("USER").build();
+        roleRepository.save(adminRole);
+        roleRepository.save(userRole);
 
-                admin.addRole(adminRole);
-                userRepository.save(admin);
-                System.out.println(" Admin seeded!");
-            }
-        };
+        User admin = User.builder()
+                .fullName("Admin User")
+                .email("admin@example.com")
+                .password("adminpass")
+                .roles(Set.of(adminRole))
+                .build();
+        userRepository.save(admin);
     }
 }
